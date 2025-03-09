@@ -1,0 +1,81 @@
+// --- Easy Level: Fetch Data from Employee Table ---
+import java.sql.*;
+public class FetchEmployeeData {
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306/your_db";
+        String username = "root";
+        String password = "root";
+        String query = "SELECT EmpID, Name, Salary FROM Employee";
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                System.out.println(rs.getInt("EmpID") + " | " +
+                                   rs.getString("Name") + " | " +
+                                   rs.getDouble("Salary"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+}
+
+// --- Medium Level: CRUD Operations on Product Table ---
+import java.sql.*;
+import java.util.Scanner;
+public class ProductCRUDOperations {
+    private static final String url = "jdbc:mysql://localhost:3306/your_db";
+    private static final String username = "root", password = "root";
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
+    }
+    public static void createProduct(String name, double price, int qty) {
+        String query = "INSERT INTO Product (ProductName, Price, Quantity) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, name); stmt.setDouble(2, price); stmt.setInt(3, qty); stmt.executeUpdate();
+            System.out.println("Product added.");
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    public static void readProduct() {
+        String query = "SELECT * FROM Product";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                System.out.println(rs.getInt("ProductID") + " | " +
+                                   rs.getString("ProductName") + " | " +
+                                   rs.getDouble("Price") + " | " +
+                                   rs.getInt("Quantity"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    // Add updateProduct and deleteProduct methods similarly...
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // Menu-driven interface to call createProduct, readProduct, etc.
+    }
+}
+
+// --- Hard Level: MVC Architecture for Student Data ---
+public class Student {
+    private int studentID; private String name, department; private double marks;
+    // Constructor, Getters and Setters...
+}
+public class StudentController {
+    private static final String url = "jdbc:mysql://localhost:3306/your_db";
+    private static Connection getConnection() throws SQLException { return DriverManager.getConnection(url, "root", "root"); }
+    public static void createStudent(Student student) {
+        String query = "INSERT INTO Student (Name, Department, Marks) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, student.getName()); stmt.setString(2, student.getDepartment()); stmt.setDouble(3, student.getMarks());
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+    public static List<Student> getAllStudents() {
+        List<Student> students = new ArrayList<>();
+        String query = "SELECT * FROM Student";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                students.add(new Student(rs.getInt("StudentID"), rs.getString("Name"), rs.getString("Department"), rs.getDouble("Marks")));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return students;
+    }
+    // Add updateStudent and deleteStudent methods...
+}
